@@ -18,58 +18,104 @@ class Client {
     double sold;
     int id;
 public:
-    Client(const char* nume_, char* adresa_, double sold_, const int id_) {
-        this->nume = new char[strlen(nume_) + 1];
-        strcpy(this->nume, nume_);
-
-        this->adresa = new char[strlen(adresa_) + 1];
-        strcpy(this->adresa, adresa_);
-
-        sold = sold_;
-        id = id_;
+    Client(const char* nume_, const char* adresa_, const double sold_, const int id_): sold{sold_}, id{id_} {
+        nume = new char[strlen(nume_) + 1];
+        strcpy(nume, nume_);
+        adresa = new char[strlen(adresa_) + 1];
+        strcpy(adresa, adresa_);
     }
 
-    char* getNume() const
-    {
-        char *numeReturnat = new char[strlen(nume) + 1];
-        strcpy(numeReturnat, nume);
-        return numeReturnat;
+    Client(const Client& other) : sold{other.sold}, id{other.id} {
+        nume = new char[strlen(other.nume) + 1];
+        strcpy(nume, other.nume);
+        adresa = new char[strlen(other.adresa) + 1];
+        strcpy(adresa, other.adresa);
     }
 
-    ~Client() =default;
+    Client& operator=(const Client& other) {
+        if (this != &other) {
+            delete[] nume;
+            delete[] adresa;
+            nume = new char[strlen(other.nume) + 1];
+            strcpy(nume, other.nume);
+            adresa = new char[strlen(other.adresa) + 1];
+            strcpy(adresa, other.adresa);
+            sold = other.sold;
+            id = other.id;
+        }
+        return *this;
+    }
+
+    const char* getNume() const { return nume; }
+    const char* getAdresa() const { return adresa; }
+    double getSold() const { return sold; }
+    int getId() const { return id; }
+
+    friend std::ostream& operator<<(std::ostream& os, const Client& c);
+
+    ~Client() {
+        delete[] nume;
+        delete[] adresa;
+    }
 };
+
+std::ostream& operator<<(std::ostream& os, const Client& c) {
+    os << c.nume;
+    return os;
+}
 
 class Produs {
         char* nume;
         double pret;
         int id, stoc;
     public:
-        Produs(const char* nume_, double pret_, const int id_, int stoc_) {
-            this->nume = new char[strlen(nume_) + 1];
-            strcpy(this->nume, nume_);
-            pret = pret_;
-            id = id_;
-            stoc = stoc_;
+        Produs(const char* nume_, const double pret_, const int id_, int stoc_) : pret{pret_}, id{id_}, stoc{stoc_} {
+            nume = new char[strlen(nume_) + 1];
+            strcpy(nume, nume_);
         }
-        ~Produs() = default;
+
+        Produs(const Produs& other): stoc{other.stoc}, id{other.id}, pret{other.pret} {
+            this->nume = new char[strlen(other.nume) + 1];
+            strcpy(this->nume, other.nume);
+        }
+
+        Produs& operator=(const Produs& other) {
+            if (this != &other) {
+                delete[] nume;
+                nume = new char[strlen(other.nume) + 1];
+                strcpy(nume, other.nume);
+                pret = other.pret;
+                id = other.id;
+                stoc = other.stoc;
+            }
+            return *this;
+        }
+
+        const char* getNume() const { return nume; }
+        double getPret() const { return pret; }
+        int getStoc() const { return stoc; }
+        int getId() const { return id; }
+
+        friend std::ostream& operator<<(std::ostream& os, const Produs& pr);
+
+        ~Produs() {
+            delete[] nume;
+        }
 };
 
+std::ostream& operator<<(std::ostream& os, const Produs& pr) {
+    os << pr.nume << " " << pr.pret << "\n";
+    return os;
+}
+
 class Cos {
-        double valoare;
         Client proprietar;
         int id_comanda;
         int nrProduse;
-        char* status;
+        double valoare;
     public:
-        Cos(const Client proprietar_, const int id_comanda_, int nrProduse_, double valoare_, char* status_) {
-            this->status = new char[strlen(status_) + 1];
-            strcpy(this->status, status_);
-            id_comanda = id_comanda_;
-            nrProduse = nrProduse_;
-            valoare = valoare_;
+        Cos(const Client& proprietar_, const int id_comanda_, int nrProduse_, double valoare_) : proprietar{proprietar_}, id_comanda{id_comanda_}, nrProduse{nrProduse_}, valoare{valoare_} {}
 
-
-        }
         ~Cos() = default;
 };
 int main() {
@@ -83,6 +129,8 @@ int main() {
     Produs paste3("Penne", 7.67, 14, 32);
     Produs sos("Sos rosu", 10.00, 15, 50);
     Produs sos2("Sos alb", 14.20, 16, 34);
+
+
 
 
     return 0;
